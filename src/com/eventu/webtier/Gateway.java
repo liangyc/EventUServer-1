@@ -1,6 +1,5 @@
 package com.eventu.webtier;
 
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -24,32 +23,37 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mysql.jdbc.Driver;
 
-
-
 @WebServlet("/Gateway")
 public class Gateway extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-    	
-    public Gateway() throws Exception {
-        super();
-        if(!DataService.establishConnection())
-        	throw new Exception("DATA SERVICE UNABLE TO ESTABLISH CONNECTION");
-    }
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)  {
-		
-	     JsonObject jObj    = new JsonObject();
-	     JsonObject newObj = jObj.getAsJsonObject(request.getParameter("mydata"));		
-		 String actionType = newObj.get("action").getAsString();
-		 
-	     String sessionId = request.getCookies();
-	     
-	     Cookie cook = new Cookie("currentSession", sessionId);
-	     response.addCookie(cook);
-	     
+	public Gateway() throws Exception {
+		super();
+		if (!DataService.establishConnection())
+			throw new Exception("DATA SERVICE UNABLE TO ESTABLISH CONNECTION");
 	}
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) {
+	protected void doGet(HttpServletRequest request,
+			HttpServletResponse response) {
+
+		JsonObject jObj = new JsonObject();
+		JsonObject newObj = jObj
+				.getAsJsonObject(request.getParameter("mydata"));
+		
+		String actionType = newObj.get("action").getAsString();
+		if(actionType.equals("register")){
+			boolean result = LoginService.register(request, newObj);
+		}
+		else if(actionType.equals("")){
+			
+		}
+		else if(actionType.equals("")){
+			
+		}
+	}
+
+	protected void doPost(HttpServletRequest request,
+			HttpServletResponse response) {
 	}
 
 }
