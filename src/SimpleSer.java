@@ -1,5 +1,4 @@
 
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -35,6 +34,8 @@ public class SimpleSer extends HttpServlet {
         super();
         // TODO Auto-generated constructor stub
         //Serial code now
+        
+        //test git stuff
         conn = null;
         Properties connectionProps = new Properties();
         connectionProps.put("user", "root");
