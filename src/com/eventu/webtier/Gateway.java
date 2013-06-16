@@ -42,7 +42,9 @@ public class Gateway extends HttpServlet {
 		
 		String actionType = newObj.get("action").getAsString();
 		if(actionType.equals("register")){
-			boolean result = LoginService.register(request, newObj);
+			JsonObject rtv = LoginService.register(request, newObj);
+			PrintWriter out = response.getWriter();
+			out.print(rtv.toString());
 		}
 		else if(actionType.equals("")){
 			
