@@ -26,5 +26,30 @@ public class DataService {
 			return false;
 		}
 	}
+
+	public static boolean userEmailExist(String uEmail) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public static int registerUser(String uEmail, String uPass) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public static Integer login(String uEmail, String uPass) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public static int addFriend(Integer userID, String friendId) {
+		// TODO Auto-generated method stub
+		//add to request table
+		
+		
+		//TODO two way invitation conflict 
+	}
+
+	
 	
 }
