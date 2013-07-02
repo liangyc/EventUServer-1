@@ -61,10 +61,13 @@ public class DataService {
 		System.out.println("HERE!!!!!");
 		try {
 			Statement stmt = conn.createStatement();
-			String query = "INSERT INTO UserAccount (userEmail, userPassword) VALUES ('" + uEmail + "','" +uPass+"')";
-			int ret = stmt.executeUpdate(query, Statement.RETURN_GENERATED_KEYS);
+			String query = "INSERT INTO UserInfo (userEmail ) VALUES ('" + uEmail + "')";
+			int userID = stmt.executeUpdate(query, Statement.RETURN_GENERATED_KEYS);
 
-			return ret;
+			query = "INSERT INTO UserAccount (userEmail, userPassword, userID) VALUES ('" + uEmail + "','" +uPass+"','" + userID+ "')";
+			stmt.executeUpdate(query, Statement.RETURN_GENERATED_KEYS);
+			
+			return userID;
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

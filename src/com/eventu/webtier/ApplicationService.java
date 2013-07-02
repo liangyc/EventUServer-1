@@ -39,7 +39,7 @@ public class ApplicationService {
 	public JsonObject login(HttpServletRequest request, JsonObject jObj) {
 		
 		String uEmail = jObj.get("userEmail").getAsString();
-		String uPass = jObj.get("userPasswork").getAsString();
+		String uPass = jObj.get("password").getAsString();
 		
 		Integer uid = myDS.login(uEmail, uPass);
 		//null if fail
