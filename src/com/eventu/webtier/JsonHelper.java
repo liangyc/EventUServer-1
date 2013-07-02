@@ -13,13 +13,13 @@ public class JsonHelper {
 
 	static JsonObject failJson(String failReason) {
 		JsonObject jObj = new JsonObject();
-		jObj.addProperty("Action", "Fail");
+		jObj.addProperty("action", "Fail");
 		jObj.addProperty("FailureReason",  failReason);
 		return jObj;
 	}
 
 	public static JsonObject succJson(JsonObject jObj) {
-		jObj.addProperty("Action", "Success");
+		jObj.addProperty("action", "Success");
 		return jObj;
 	}
 }

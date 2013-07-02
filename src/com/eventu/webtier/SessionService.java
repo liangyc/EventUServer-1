@@ -7,7 +7,7 @@ import javax.servlet.http.HttpSession;
 
 public class SessionService {
 	
-	upadteSession(HttpServletRequest request){
+	public void upadteSession(HttpServletRequest request){
 		
 		HttpSession s = request.getSession(true);
 		s.setAttribute("userID", "dsf");
