@@ -15,8 +15,11 @@ public class SessionService {
 	}
 
 	public static Integer generateSessionId(HttpServletRequest request,
-			String uEmail, String uPass) {
+			String uEmail, String uPass, int userID) {
 		
+		return userID;
+		
+	/*	
 		Random r = new Random();
 		Integer random = r.nextInt();
 		
@@ -27,13 +30,13 @@ public class SessionService {
 		//TODO http authe..
 		
 		return unique;
-		
+	*/	
 	}
 
 	public static Integer getUID(Integer sessionID) {
 		// TODO Auto-generated method stub
 		//-1 for not exist
-		return null;
+		return sessionID;
 	}
 	
 	

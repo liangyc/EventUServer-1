@@ -41,12 +41,13 @@ public class Gateway extends HttpServlet {
 		actionMap.put("register" ,1);
 		actionMap.put("login", 2);
 		actionMap.put("addFriend", 3);
-		actionMap.put("addFriend", 9);
 		actionMap.put("updateLocation", 4);
 		actionMap.put("getEvent", 5);
 		actionMap.put("createEvent", 6);
 		actionMap.put("allFriendsQuery", 7);
 		actionMap.put("nearbyFriends", 8);
+		actionMap.put("removeFriend", 9);
+		actionMap.put("detailProfile", 10);
 		
 		DataService userDB = new DataService("UserProfile");
 		ApplicationService appSer1 = new ApplicationService(userDB);
@@ -109,6 +110,8 @@ public class Gateway extends HttpServlet {
 	        	rtv = appSer1.nearbyFriends(request, newObj);	
 	        case 9:
 	        	rtv = appSer1.removeFriend(request, newObj);
+	        case 10:
+	        	rtv = appSer1.detailProfile(request, newObj);
 	        default:
 	            rtv = null;
 		}        

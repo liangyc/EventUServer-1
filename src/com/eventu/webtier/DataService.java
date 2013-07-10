@@ -7,12 +7,15 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Properties;
+
+import com.google.gson.JsonObject;
 
 public class DataService {
 
-	Connection conn;
-	String dbName;
+	private Connection conn;
+	private String dbName;
 	
 	public DataService(String dbName){
 		
@@ -58,15 +61,25 @@ public class DataService {
 
 	public int registerUser(String uEmail, String uPass) {
 		
-		System.out.println("HERE!!!!!");
+		
 		try {
 			Statement stmt = conn.createStatement();
 			String query = "INSERT INTO UserInfo (userEmail ) VALUES ('" + uEmail + "')";
-			int userID = stmt.executeUpdate(query, Statement.RETURN_GENERATED_KEYS);
-
-			query = "INSERT INTO UserAccount (userEmail, userPassword, userID) VALUES ('" + uEmail + "','" +uPass+"','" + userID+ "')";
 			stmt.executeUpdate(query, Statement.RETURN_GENERATED_KEYS);
 			
+			ResultSet rs = stmt.getGeneratedKeys();
+			
+			int userID = -1;
+			if (rs.next()) {
+				userID  = rs.getInt(1);	 
+			}
+			
+			
+			
+			query = "INSERT INTO UserAccount (userEmail, userPassword, userID) VALUES ('" + uEmail + "','" +uPass+"','" + userID+ "')";
+			stmt.executeUpdate(query);
+			
+			System.out.println(userID);
 			return userID;
 			
 		} catch (SQLException e) {
@@ -84,9 +97,16 @@ public class DataService {
 			ResultSet ret = stmt.executeQuery(query);
 
 			if (ret.next()) {
-				String dbPass = ret.getString("userPassword");
-				if(dbPass == uPass)
-					return ret.getInt("userID");
+				String dbPass = ret.getString("userPassword").trim();
+				
+				if(dbPass.equals(uPass) ){
+					int uid = ret.getInt("userID");
+					return uid;
+				}
+				else{
+					//System.out.println("password Wrong");
+					return -1;
+				}
 			}
 
 			
@@ -123,34 +143,51 @@ public class DataService {
 			}
 			*/
 			
-			String query = "INSERT INTO UserFriend (userID, friendID) VALUES ('" + userID + "','" + friendID +"'); " +
-					"INSERT INTO UserFriend (userID, friendID) VALUES ('" + friendID + "','" + userID +"') ;";
+			String query = "INSERT INTO UserFriend (userID, friendID) VALUES ('" + userID + "','" + friendID +"'); ";
+			int ret = stmt.executeUpdate(query);
+			//System.out.println(ret);
 			
-			ResultSet ret = stmt.executeQuery(query);
-
-			while (ret.next()) {
-				System.out.println(ret.toString());
-			}
+			query = "INSERT INTO UserFriend (userID, friendID) VALUES ('" + friendID + "','" + userID +"') ;";
+			ret = stmt.executeUpdate(query);
+			//System.out.println(ret);
 			
 			return 0;
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return -1;
 		}
 		
-		return -1;
+		
 	}
 
 	public static int updateLocation(Integer userID, Long latitude,
 			Long longitude, GeoHash geoHash) {
-		// TODO Auto-generated method stub
+		
+		
+		
 		return 0;
 	}
 
-	public static int removeFriend(Integer userID, Integer friendId) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int removeFriend(Integer userID, Integer friendID) {
+		
+		try {
+			Statement stmt = conn.createStatement();
+			String query = "DELETE FROM UserFriend WHERE userID = '" + userID + "'; ";
+			
+			int ret = stmt.executeUpdate(query);
+			//System.out.println(ret);
+			query = "DELETE FROM UserFriend WHERE userID = '" + friendID + "'; ";
+			ret = stmt.executeUpdate(query);
+			return 0;
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return -1;
+		}
+
 	}
 
 	public int createEvent(Integer userID, String eventName,
@@ -175,6 +212,70 @@ public class DataService {
 			e.printStackTrace();
 		}
 		return -1;
+		
+	}
+
+	public ArrayList<Integer> allFriendsQuery(Integer userID) {
+		
+		try {
+			Statement stmt = conn.createStatement();
+			String query = " SELECT friendID FROM UserFriend WHERE userID='" + userID + "'";
+			ResultSet ret = stmt.executeQuery(query);
+
+			//JsonObject retJ = new JsonObject();
+			
+			ArrayList<Integer> idArray = new ArrayList<Integer>();
+			while (ret.next()) {
+				int friendID = ret.getInt("friendID");
+				idArray.add(friendID);
+			}
+			
+			return idArray;
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		
+		
+	}
+
+	public JsonObject detailProfile(Integer friendID) {
+		try {
+			Statement stmt = conn.createStatement();
+			String query = " SELECT * FROM UserInfo WHERE userID='" + friendID + "'";
+			ResultSet ret = stmt.executeQuery(query);
+			
+			JsonObject jo = new JsonObject();
+			if(ret.next()){
+				String value = ret.getString("userEmail");
+				jo.addProperty("userEmail", value);
+				
+				value = ret.getString("userName");
+				jo.addProperty("userName", value);
+				
+				int picID = ret.getInt("picID");
+				query = " SELECT picAddr FROM UserPic WHERE picID='" + picID + "'";
+				ResultSet picret = stmt.executeQuery(query);
+				if(picret.next()){
+					value = picret.getString("picAddr");
+					jo.addProperty("picAddr", value);
+				}else{
+					return null;
+				}
+				
+				return jo;
+			}
+			else{ 
+				return null;
+			}
+		}catch (SQLException e) {
+			
+			e.printStackTrace();
+			return null;
+		}
+			
 		
 	}
 
