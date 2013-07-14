@@ -16,6 +16,7 @@ public class DataService {
 
 	private Connection conn;
 	private String dbName;
+	private LocationService locSer;
 	
 	public DataService(String dbName){
 		
@@ -35,6 +36,9 @@ public class DataService {
 			e.printStackTrace();
 	
 		}
+        
+        
+        locSer = new LocationService();
 	}
 
 	public boolean userEmailExist(String uEmail) {
@@ -65,6 +69,7 @@ public class DataService {
 		try {
 			Statement stmt = conn.createStatement();
 			String query = "INSERT INTO UserInfo (userEmail ) VALUES ('" + uEmail + "')";
+			System.out.println(query);
 			stmt.executeUpdate(query, Statement.RETURN_GENERATED_KEYS);
 			
 			ResultSet rs = stmt.getGeneratedKeys();
@@ -162,10 +167,10 @@ public class DataService {
 		
 	}
 
-	public static int updateLocation(Integer userID, Long latitude,
-			Long longitude, GeoHash geoHash) {
+	public int updateLocation(Integer id, Long latitude,
+			Long longitude, GeoHash geoHash, int type) {
 		
-		
+		locSer.updateLocation(id, type,  geoHash);
 		
 		return 0;
 	}
@@ -191,27 +196,43 @@ public class DataService {
 	}
 
 	public int createEvent(Integer userID, String eventName,
-			int eventPremission, String eventTime, Long latitude,
-			Long longitude, GeoHash geoHash) {
+			int eventPremission, String eventTime, Float latitude,
+			Float longitude, GeoHash geoHash) {
 		
 		
 		try {
 			Statement stmt = conn.createStatement();
-			String query = "INSERT INTO EventInfo (eventName, time, public, lat, long, geohash) VALUES " +
-					"('" + eventName + "','" +eventTime+"','" + eventPremission + "','" +latitude+"','" + longitude +"','"+ geoHash.toBase32()+"')";
+			String query = "INSERT INTO EventInfo (eventName, time, public, lat, lon, geohash) VALUES " +
+					"('" + eventName + "','" +eventTime+"','" + eventPremission + "','" +latitude+"','" + longitude +"','"+ geoHash.toBase32()+"');";
+			
+			//System.out.println(query);
 			int ret = stmt.executeUpdate(query, Statement.RETURN_GENERATED_KEYS);
 			
-			query = "INSERT INTO EventUser (eventID, userID, accessibility) VALUES" +
-					"('" + ret + "','" +userID+"','" + eventPremission + "', 0 )";
-			ResultSet ret2 = stmt.executeQuery(query);
+			ResultSet rs = stmt.getGeneratedKeys();
 			
-			return 0;//TODO
+			int eventID = -1;
+			if (rs.next()) {
+				eventID  = rs.getInt(1);	 
+			}
+			
+			
+			
+			query = "INSERT INTO EventUser (eventID, userID, accessibility) VALUES" +
+					"('" + eventID + "','" +userID+"',' 0' )";
+			int ret2 = stmt.executeUpdate(query);
+			
+			int locRet = locSer.updateLocation(eventID, 0,  geoHash);
+			if (locRet < 0)
+				return (locRet-10);
+			else
+				return 0;//TODO
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return -1;
 		}
-		return -1;
+		
 		
 	}
 
@@ -243,6 +264,9 @@ public class DataService {
 
 	public JsonObject detailProfile(Integer friendID) {
 		try {
+			
+			//TODO check friendship, privacy
+			
 			Statement stmt = conn.createStatement();
 			String query = " SELECT * FROM UserInfo WHERE userID='" + friendID + "'";
 			ResultSet ret = stmt.executeQuery(query);
@@ -277,6 +301,98 @@ public class DataService {
 		}
 			
 		
+	}
+
+	public int joinEvent(Integer userID, Integer eventID) {
+		
+		try {
+			Statement stmt = conn.createStatement();
+			String query = " SELECT * FROM EventInfo WHERE eventID='" + eventID + "'";
+			ResultSet ret = stmt.executeQuery(query);
+			
+			
+			if(ret.next()){
+				int isPublic = ret.getInt("public");//TODO test it
+				
+				if(isPublic == 0){
+					//public
+					query = "INSERT INTO EventUser (eventID, userID, accessibility) VALUES" +
+							"('" + eventID + "','" +userID+"','"  + "', 1 )";
+					ResultSet ret2 = stmt.executeQuery(query);
+					return 0;
+				}
+				else{
+					//private
+					//TODO send request
+					query = "INSERT INTO EventUser (eventID, userID, accessibility) VALUES" +
+							"('" + eventID + "','" +userID+"','"  + "', 1 )";
+					ResultSet ret2 = stmt.executeQuery(query);
+					return 1;//TODO return request sent, just add it in prototype
+				}
+				
+
+			}
+			else{ 
+				return -1;//No such event
+			}
+		}catch (SQLException e) {
+			
+			e.printStackTrace();
+			return -1;
+		}
+	}
+
+	public JsonObject viewEvent(Integer userID, Integer eventID) {
+		
+		try {
+			
+			//TODO check userEvent, privacy
+			Statement stmt = conn.createStatement();
+			String query = " SELECT * FROM EventInfo WHERE eventID='" + eventID + "'";
+			ResultSet ret = stmt.executeQuery(query);
+			
+			JsonObject jo = new JsonObject();
+			if(ret.next()){
+				
+				//check public, joined or not
+				int isPublic = ret.getInt("public");
+				if(isPublic != 0){
+					//private
+					query = " SELECT * FROM EventUser WHERE eventID='" + eventID + "' AND userID = '" + userID +"')";
+					ResultSet userEventret = stmt.executeQuery(query);
+					
+					if( ! ret.next() ){
+						jo.addProperty("Failed", "you dont have premission");
+						return jo;
+					}
+				}
+				
+				String value = ret.getString("eventName");
+				jo.addProperty("eventName", value);
+				
+				value = ret.getString("time");
+				jo.addProperty("time", value);
+				
+				value = Float.toString (ret.getFloat("long") );
+				jo.addProperty("long", value);
+
+				value = Float.toString (ret.getFloat("lat") );
+				jo.addProperty("lat", value);
+				
+				value = ret.getString("descript");
+				jo.addProperty("descript", value);
+				
+				return jo;
+			}
+			else{ 
+				jo.addProperty("Failed", "no such event");
+				return jo;
+			}
+		}catch (SQLException e) {
+			
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	

@@ -126,7 +126,7 @@ public class ApplicationService {
 	}
 	
 	
-	public static JsonObject updateLocation(HttpServletRequest request,
+	public JsonObject updateLocation(HttpServletRequest request,
 			JsonObject jObj) {
 		Long latitude = jObj.get("latitude").getAsLong();
 		Long longitude = jObj.get("longitude").getAsLong();
@@ -140,7 +140,7 @@ public class ApplicationService {
 			return JsonHelper.failJson("login fail");
 		}
 		else{
-			int eventID = DataService.updateLocation(userID, latitude, longitude, geoHash);
+			int eventID = myDS.updateLocation(userID, latitude, longitude, geoHash, 1);
 			
 			if (eventID == -1 ){
 				return JsonHelper.failJson("update location failed!..");
@@ -176,8 +176,8 @@ public class ApplicationService {
 		int eventPremission = jObj.get("eventPremission").getAsInt(); //0 - public 1-private 2-....
 		String eventTime = jObj.get("eventTime").getAsString();
 		
-		Long latitude = jObj.get("latitude").getAsLong();
-		Long longitude = jObj.get("longitude").getAsLong();
+		Float latitude = jObj.get("latitude").getAsFloat();
+		Float longitude = jObj.get("longitude").getAsFloat();
 		GeoHash geoHash = new GeoHash(latitude, longitude, 60);
 		
 		String description = jObj.get("description").getAsString();
@@ -246,12 +246,65 @@ public class ApplicationService {
 			return JsonHelper.failJson("login fail");
 		}
 		else{
-			//TODO check friendship, privacy
+			
 			JsonObject jo = myDS.detailProfile(friendID);
 			return JsonHelper.succJson(jo);
 		}
 	}
 
+	public JsonObject joinEvent(HttpServletRequest request, JsonObject jObj) {
+		Integer sessionID = jObj.get("userID").getAsInt();
+		Integer EventID = jObj.get("EventID").getAsInt();
+		
+		Integer userID = SessionService.getUID(sessionID);
+		
+		if (userID == -1){
+			return JsonHelper.failJson("login fail");
+		}
+		else{
+			//TODO check friendship, privacy
+			int ret = myDS.joinEvent(userID, EventID);
+			
+			if(ret == 0){
+				return JsonHelper.succJson(new JsonObject());
+			}
+			else if(ret == 1){
+				return JsonHelper.failJson("request sent!"); //in protoType this is success
+			}
+			else{
+				return JsonHelper.failJson("Somethings wrong");
+			}
+		}
+
+	}
+
+	public JsonObject viewEvent(HttpServletRequest request, JsonObject jObj) {
+		
+		Integer sessionID = jObj.get("userID").getAsInt();
+		Integer eventID = jObj.get("eventID").getAsInt();
+		
+		Integer userID = SessionService.getUID(sessionID);
+		
+		if (userID == -1){
+			return JsonHelper.failJson("login fail");
+		}
+		else{
+			//TODO check friendship, privacy
+			JsonObject jo = myDS.viewEvent(userID, eventID);
+			
+			String failReason = jo.get("Failed").getAsString();
+			if( failReason!= null){
+				return JsonHelper.failJson(failReason);
+			}
+			else{
+				return JsonHelper.succJson(jo);
+			}
+		}
+		
+
+	}
+
+	
 	
 	
 }
