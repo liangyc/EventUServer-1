@@ -52,7 +52,7 @@ public class Gateway extends HttpServlet {
 		actionMap.put("viewEvent", 12);
 		actionMap.put("nearbyEvent", 13);
 		
-		ApplicationService appSer1 = new ApplicationService();
+		 appSer1 = new ApplicationService();
 		
 	//	if (!DataService.establishConnection())
 	//		throw new Exception("DATA SERVICE UNABLE TO ESTABLISH CONNECTION");

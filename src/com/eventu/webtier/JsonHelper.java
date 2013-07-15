@@ -19,7 +19,7 @@ public class JsonHelper {
 	static JsonObject failJson(String failReason) {
 		JsonObject jObj = new JsonObject();
 		jObj.addProperty("action", "Fail");
-		jObj.addProperty("FailureReason",  failReason);
+		jObj.addProperty("reason",  failReason);
 		return jObj;
 	}
 
