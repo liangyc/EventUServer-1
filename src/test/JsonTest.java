@@ -33,16 +33,16 @@ public class JsonTest {
 		HttpServletRequest request = null;
 		//String json = "{\"password\":\"cb0769dcb7e8d3f7b30762254e649cd52fd32b5be62fdsfsdf724353f3f\",\"action\":\"login\",\"userEmail\":\"7@dsf.sdf\"}";
 		//String json  = "{\"friendID\":\"2\",\"action\":\"removeFriend\",\"userID\":\"13\"}";
-		//String json  = "{\"action\":\"allFriend\",\"userID\":\"13\"}";
+		String json  = "{\"action\":\"allFriend\",\"userID\":\"13\"}";
 		//String json  = "{\"action\":\"createEvent\",\"userID\":\"13\", \"eventName\":\"testEvent4\", \"eventPremission\":0, \"eventTime\":'2013-08-01 16:00:00', \"latitude\":37.33509, \"longitude\":-121.88611, \"description\":\"this is test event 2\"  }";
-		String json = "{\"action\":\"nearbyEvent\", \"userID\":\"13\",\"latitude\":37.33509, \"longitude\":-121.88611}";
+		//String json = "{\"action\":\"nearbyEvent\", \"userID\":\"13\",\"latitude\":37.33509, \"longitude\":-121.88611}";
 		JsonParser jsonParser = new JsonParser();
 		JsonObject jo = (JsonObject)jsonParser.parse(json);
 		
-		JsonObject rtv = appSer1.nearbyEvent(request, jo );
-		//System.out.println(rtv);
+		JsonObject rtv = appSer1.allFriendsQuery(request, jo );
+		System.out.println(rtv);
 
-		
+		/*
 		ArrayList<TestClass> arr = new ArrayList<TestClass>();
 		arr.add( new TestClass("ss1",111) );
 		arr.add( new TestClass("ss2",222) );
@@ -56,6 +56,8 @@ public class JsonTest {
 		
 		System.out.println(retJ.toString());
 		//INSERT INTO UserInfo (userEmail ) VALUES ('7@dsf.sdf')
+		 * 
+		 */
 	}
 
 	

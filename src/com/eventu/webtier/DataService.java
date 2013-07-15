@@ -286,7 +286,7 @@ public class DataService {
 					value = picret.getString("picAddr");
 					jo.addProperty("picAddr", value);
 				}else{
-					return null;
+					System.out.println("no pic for user" + friendID);
 				}
 				
 				return jo;
@@ -373,8 +373,8 @@ public class DataService {
 				value = ret.getString("time");
 				jo.addProperty("time", value);
 				
-				value = Float.toString (ret.getFloat("long") );
-				jo.addProperty("long", value);
+				value = Float.toString (ret.getFloat("lon") );
+				jo.addProperty("lon", value);
 
 				value = Float.toString (ret.getFloat("lat") );
 				jo.addProperty("lat", value);

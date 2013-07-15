@@ -213,17 +213,27 @@ public class ApplicationService {
 			return JsonHelper.failJson("login fail");
 		}
 		else{
-			ArrayList<Integer> ret = myDS.allFriendsQuery(userID);
-			if (ret == null ){
+			ArrayList<Integer> userIDs = myDS.allFriendsQuery(userID);
+			if (userIDs == null ){
 				return JsonHelper.failJson("Error!");
 			}
-			else if( ret.size() == 0 ){
+			else if( userIDs.size() == 0 ){
 				return JsonHelper.failJson("You dont have any friends!");
 			}
 			else{
 				
-				JsonObject jo = JsonHelper.array2J(ret);
-				return JsonHelper.succJson(jo);
+				ArrayList<String> userNames = new ArrayList<String>();
+				for(Integer uID : userIDs){
+					JsonObject userInfo = myDS.detailProfile(uID);
+					String name = userInfo.get("userName").getAsString();
+					userNames.add(name);
+				}
+				
+				JsonObject retJ = new JsonObject();
+				
+				retJ.addProperty("IDs", userIDs.toString());
+				retJ.addProperty("names", userNames.toString());
+				return JsonHelper.succJson(retJ);
 				
 			}
 		}
@@ -321,13 +331,24 @@ public class ApplicationService {
 		
 		
 		
+		
 		//TODO
 		if(eventIDs == null){
 			return JsonHelper.failJson("Fail");
 		}
 		else{
-			JsonObject jo = JsonHelper.array2J(eventIDs);
-			return JsonHelper.succJson(jo);
+			ArrayList<String> eventNames = new ArrayList<String>();
+			for(Integer eID : eventIDs){
+				JsonObject eventInfo = myDS.viewEvent(userID, eID);
+				String eventName = eventInfo.get("eventName").getAsString();
+				eventNames.add(eventName);
+			}
+			
+			JsonObject retJ = new JsonObject();
+			
+			retJ.addProperty("IDs", eventIDs.toString());
+			retJ.addProperty("names", eventNames.toString());
+			return JsonHelper.succJson(retJ);
 		}
 
 	}
