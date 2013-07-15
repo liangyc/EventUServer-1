@@ -329,12 +329,11 @@ public class ApplicationService {
 		
 		ArrayList<Integer> eventIDs = myLS.findNearby( 0, geoHash);
 		
-		
-		
-		
-		//TODO
 		if(eventIDs == null){
-			return JsonHelper.failJson("Fail");
+			return JsonHelper.failJson("Error");
+		}
+		else if(eventIDs.size()==0){
+			return JsonHelper.failJson("No event nearby");
 		}
 		else{
 			ArrayList<String> eventNames = new ArrayList<String>();
