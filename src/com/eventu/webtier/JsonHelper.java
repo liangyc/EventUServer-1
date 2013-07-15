@@ -31,23 +31,13 @@ public class JsonHelper {
 	
 	public static JsonObject array2J(ArrayList arr ) {
 		
+		
 		JsonObject retJ = new JsonObject();
 		
-		StringBuffer sb = new StringBuffer();
-		sb.append("{\"friends\":[");
+		retJ.addProperty("IDs", arr.toString());
 		
-		for(Object uid: arr){
-			sb.append("{\"userID\":"+uid+"},");
-		}
 		
-		sb.deleteCharAt(sb.length()-1);
-		
-		sb.append("]}");
-		
-		JsonParser jsonParser = new JsonParser();
-		JsonObject jo = (JsonObject)jsonParser.parse(sb.toString());
-		
-		return jo;
+		return retJ;
 		
 	}
 	

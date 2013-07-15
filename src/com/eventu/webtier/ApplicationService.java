@@ -16,9 +16,12 @@ import com.google.gson.JsonParser;
 public class ApplicationService {
 
 	DataService myDS;
+	LocationService myLS;
 	
-	public ApplicationService(DataService userDB) {
-		myDS = userDB;
+	public ApplicationService() {
+		
+		myDS = new DataService("UserProfile");
+		myLS = new LocationService();
 	}
 
 	public  JsonObject register(HttpServletRequest request, JsonObject jObj) {
@@ -128,8 +131,8 @@ public class ApplicationService {
 	
 	public JsonObject updateLocation(HttpServletRequest request,
 			JsonObject jObj) {
-		Long latitude = jObj.get("latitude").getAsLong();
-		Long longitude = jObj.get("longitude").getAsLong();
+		Float latitude = jObj.get("latitude").getAsFloat();
+		Float longitude = jObj.get("longitude").getAsFloat();
 		
 		GeoHash geoHash = new GeoHash(latitude, longitude, 60);
 		
@@ -140,7 +143,7 @@ public class ApplicationService {
 			return JsonHelper.failJson("login fail");
 		}
 		else{
-			int eventID = myDS.updateLocation(userID, latitude, longitude, geoHash, 1);
+			int eventID = myLS.updateLocation(userID, 1, geoHash);
 			
 			if (eventID == -1 ){
 				return JsonHelper.failJson("update location failed!..");
@@ -301,6 +304,31 @@ public class ApplicationService {
 			}
 		}
 		
+
+	}
+
+	public JsonObject nearbyEvent(HttpServletRequest request, JsonObject jObj) {
+		
+		Integer sessionID = jObj.get("userID").getAsInt();
+			
+		Integer userID = SessionService.getUID(sessionID);
+	
+		Float latitude = jObj.get("latitude").getAsFloat();
+		Float longitude = jObj.get("longitude").getAsFloat();
+		GeoHash geoHash = new GeoHash(latitude, longitude, 60);
+		
+		ArrayList<Integer> eventIDs = myLS.findNearby( 0, geoHash);
+		
+		
+		
+		//TODO
+		if(eventIDs == null){
+			return JsonHelper.failJson("Fail");
+		}
+		else{
+			JsonObject jo = JsonHelper.array2J(eventIDs);
+			return JsonHelper.succJson(jo);
+		}
 
 	}
 

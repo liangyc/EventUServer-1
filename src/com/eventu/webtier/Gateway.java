@@ -50,9 +50,9 @@ public class Gateway extends HttpServlet {
 		actionMap.put("detailProfile", 10);
 		actionMap.put("joinEvent", 11);
 		actionMap.put("viewEvent", 12);
+		actionMap.put("nearbyEvent", 13);
 		
-		DataService userDB = new DataService("UserProfile");
-		ApplicationService appSer1 = new ApplicationService(userDB);
+		ApplicationService appSer1 = new ApplicationService();
 		
 	//	if (!DataService.establishConnection())
 	//		throw new Exception("DATA SERVICE UNABLE TO ESTABLISH CONNECTION");
@@ -118,6 +118,8 @@ public class Gateway extends HttpServlet {
 	        	rtv = appSer1.joinEvent(request, newObj);
 	        case 12:
 	        	rtv = appSer1.viewEvent(request, newObj);
+	        case 13:
+	        	rtv = appSer1.nearbyEvent(request, newObj);	
 	        default:
 	            rtv = null;
 		}        

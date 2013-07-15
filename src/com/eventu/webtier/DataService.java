@@ -167,8 +167,8 @@ public class DataService {
 		
 	}
 
-	public int updateLocation(Integer id, Long latitude,
-			Long longitude, GeoHash geoHash, int type) {
+	public int updateLocation(Integer id, Float latitude,
+			Float longitude, GeoHash geoHash, int type) {
 		
 		locSer.updateLocation(id, type,  geoHash);
 		

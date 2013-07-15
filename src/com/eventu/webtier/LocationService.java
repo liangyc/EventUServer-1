@@ -19,6 +19,8 @@ import com.google.gson.JsonObject;
  * @author yanliang
  *
  */
+
+//TODO move to application service
 public class LocationService {
 	
 	private Connection conn;
@@ -73,13 +75,13 @@ public class LocationService {
 
 	
 	
-	public int[] findNearby(int id, int type, GeoHash geoHash) {
+	public ArrayList<Integer> findNearby( int type, GeoHash geoHash) {
 		//type 0  for event, 1 for people
 		GeoHash[] nearby = geoHash.getAdjacent();
 		
 		String tableName = getTableName(type);
 		if(tableName == null) return null;
-		
+	
 		ArrayList<Integer> retIDs = new ArrayList<Integer>();
 		
 		for(GeoHash adj : nearby){
@@ -87,13 +89,17 @@ public class LocationService {
 			
 			try {
 				Statement stmt = conn.createStatement();
-				String query = " SELECT * FROM " + tableName + " WHERE geaHash='" + areaHash + "'";
+				String query = " SELECT * FROM " + tableName + " WHERE geoHash='" + areaHash + "'";
 				ResultSet ret = stmt.executeQuery(query);
 				
 				while(ret.next()){
 					int value = ret.getInt("id");
 					retIDs.add(value);
 				}		
+				
+				System.out.println(retIDs);
+				return retIDs;
+				
 			}catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -101,7 +107,7 @@ public class LocationService {
 			}
 	
 		}
-		return convertIntegers(retIDs);
+		return null;
 	}
 	
 	
